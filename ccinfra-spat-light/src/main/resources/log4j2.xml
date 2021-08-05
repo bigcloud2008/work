@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 设置log4j2的自身log级别为warn -->
+<!-- OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+<configuration status="off" monitorInterval="30">
+
+	<properties>
+        <property name="LOG_HOME">logs</property>
+        <property name="FILE_NAME">log4j2</property>
+    </properties>
+
+
+    <appenders>
+
+		<Console name="Console" target="SYSTEM_OUT">  
+            <PatternLayout pattern="%d{MMdd/HH:mm:ss.SSS} %t %-5level [%c %L] %m%n" />  
+        </Console>
+	
+		<!-- 
+			fileName：日志存储路径
+    		filePattern：历史日志封存路径。其中%d{yyyyMMddHH}表示了封存历史日志的时间单位
+    		（目前单位为小时，yyyy表示年，MM表示月，dd表示天，HH表示小时，mm表示分钟，ss表示秒，SS表示毫秒）。
+    		注意后缀，log4j2自动识别zip等后缀，表示历史日志需要压缩。
+		 -->
+
+        <RollingRandomAccessFile name="RollingRandomAccessFile" fileName="${FILE_NAME}.log" filePattern="${FILE_NAME}-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level [%c %L] %m%n"/>
+            <Policies>
+                <!-- 每天生成一个日志文件 -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <!-- 每到100M生成一个日志文件 -->
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+            <!-- 最大保存文件数 -->
+            <DefaultRolloverStrategy max="3"/>
+        </RollingRandomAccessFile>
+ 
+ 
+    </appenders>
+ 
+    <loggers>
+        <!--过滤掉spring和mybatis的一些无用的DEBUG信息-->
+        <!--  
+        <logger name="org.springframework" level="INFO"></logger>
+        <logger name="org.mybatis" level="INFO"></logger>
+        -->
+        <root level="DEBUG">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="RollingRandomAccessFile"/>
+        </root>
+    </loggers>
+ 
+</configuration>
